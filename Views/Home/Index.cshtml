@@ -1,0 +1,56 @@
+﻿@using CallApp.Models
+@model IEnumerable<Contact>
+@{
+    ViewBag.Title = "Contacts";
+}
+
+<h2>Contacts</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Message</th>
+            <th>Phone number</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Name</td>
+                <td>@c.Message</td>
+                <td>@c.PhoneNumber</td>
+                <td>
+                    <button data-phone="@c.PhoneNumber" class="btn btn-default btn-call" type="button"><span class="glyphicon glyphicon-earphone"></span><span>  Click To Call</span></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="modal fade" id="select-number-dialog" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Select 'From' number</h4>
+            </div>
+            <div class="modal-body">
+                <div class="btn-group-vertical fill100" role="group">
+                    @foreach (var n in ViewBag.UserNumbers)
+                    {
+                        <button class="btn btn-number btn-default" data-phone="@n.PhoneNumber">@string.Format("{0} ({1})", n.PhoneNumber, n.Type)</button>
+                    }
+                </div>
+                <form>
+                    <div class="input-group fill100 another-number-area">
+                        <input type="tel" class="form-control" placeholder="Another Number" required>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-another-number btn-block" type="submit">Call</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
