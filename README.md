@@ -2,24 +2,42 @@
 
 Catapult Api demo app (creating calls and bridges)
 
-## Getting started
-You need to have
-    - Git
-    - .Net Framework 4.5
-    - Visual Studio 2012 (with nuget) or 2013
-    - Bandwidth Application Platform account
-    - Azure account
-    - Common Azure Tools for Visual Studio
+#### Demonstrates
+* Use [Catapult SDK](https://github.com/bandwidthcom/csharp-bandwidth)
+* Making calls
+* Creating  bridges
+
+
+
+## Prerequisites
+- Configured Machine with Ngrok/Port Forwarding -OR- Azure Account
+  - [Ngrok](https://ngrok.com/)
+  - [Azure](https://account.windowsazure.com/Home/Index)
+- [Catapult Account](http://ap.bandwidth.com/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
+- Visual Studio 2013 or 2015
+- Common Azure Tools for Visual Studio (they are preinstalled with Visual Studio)
 
 
 ## Build and Deploy
+
+### Azure One Click
+
+#### Settings Required To Run
+* ```User Id```
+* ```Api Token```
+* ```Api Secret```
+
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
+
+### Locally
+
 
 #### Clone the repository
 
 ```console
 git clone https://github.com/bandwidthcom/csharp-bandwidth-examples
 ```
-Open this solution in Visual Studio 2013. 
+Open this solution in Visual Studio. 
 
 Fill sections <appSettings> of Web.config with valid values:
 `userId`, `apiToken`, `apiSecret` are Catapult API auth data (you can get them on tab "Account" of https://catapult.inetwork.com/pages/catapult.jsf)
