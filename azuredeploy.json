@@ -66,8 +66,7 @@
             "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
           ],
           "properties":{
-            "RepoUrl":"https://github.com/BandwidthExamples/node-hybrid-iris-catapult-app.git",
-            "branch":"master",
+            "RepoUrl":"https://github.com/BandwidthExamples/csharp-call-contacts-example.git",
             "IsManualIntegration": true
           }
         },

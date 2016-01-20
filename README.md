@@ -38,7 +38,7 @@ Catapult Api demo app (creating calls and bridges)
 #### Clone the repository
 
 ```console
-git clone https://github.com/bandwidthcom/csharp-bandwidth-examples
+git clone https://github.com/BandwidthExamples/csharp-call-contacts-example.git
 ```
 Open this solution in Visual Studio. 
 
