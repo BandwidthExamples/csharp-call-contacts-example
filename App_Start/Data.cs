@@ -29,19 +29,13 @@ namespace CallApp
             new Number{PhoneNumber = "+19196943243", Type = "Cell Number"},
             new Number{PhoneNumber = "+12522569209", Type = "Home Number"}
         };
-        private readonly KeyValueConfigurationCollection _appSettings;
-
-        public DataProvider(KeyValueConfigurationCollection appSettings)
-        {
-            this._appSettings = appSettings;
-        }
-
+       
         public IList<Contact> GetContacts()
         {
-            var contacts = _appSettings["contacts"];
-            if(contacts != null && !string.IsNullOrWhiteSpace(contacts.Value))
+            var contacts = ConfigurationManager.AppSettings["contacts"];
+            if(string.IsNullOrWhiteSpace(contacts))
             {
-                return (from c in contacts.Value.Split(';')
+                return (from c in contacts.Split(';')
                         let values = c.Split(':')
                         select new Contact
                         {
@@ -54,10 +48,10 @@ namespace CallApp
 
         public IList<Number> GetUserNumbers()
         {
-            var numbers = _appSettings["userNumbers"];
-            if (numbers != null && !string.IsNullOrWhiteSpace(numbers.Value))
+            var numbers = ConfigurationManager.AppSettings["userNumbers"];
+            if (numbers != null && !string.IsNullOrWhiteSpace(numbers))
             {
-                return (from c in numbers.Value.Split(';')
+                return (from c in numbers.Split(';')
                         let values = c.Split(':')
                         select new Number
                         {
@@ -83,9 +77,7 @@ namespace CallApp
     {
         public static void Load(IAppBuilder app)
         {
-            var config = WebConfigurationManager.OpenWebConfiguration("~");
-            var appSettings = config.AppSettings.Settings;
-            app.CreatePerOwinContext(() => new DataProvider(appSettings));
+            app.CreatePerOwinContext(() => new DataProvider());
         }
 
     }

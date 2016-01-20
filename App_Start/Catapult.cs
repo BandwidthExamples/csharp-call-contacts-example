@@ -14,16 +14,11 @@ namespace CallApp
         //Initialze Catapult specific data
         public static void Configure(IAppBuilder app)
         {
-            var config = WebConfigurationManager.OpenWebConfiguration("~");
-            var appSettings = config.AppSettings.Settings;
-            var catapult = Client.GetInstance(appSettings["userId"].Value,
-                appSettings["apiToken"].Value,
-                appSettings["apiSecret"].Value);
-            string phoneNumber = null;
-            if(appSettings["phoneNumberForCallbacks"] != null)
-            {
-                phoneNumber = appSettings["phoneNumberForCallbacks"].Value;
-            }
+            var appSettings = ConfigurationManager.AppSettings;
+            var catapult = Client.GetInstance(appSettings["userId"],
+                appSettings["apiToken"],
+                appSettings["apiSecret"]);
+            var phoneNumber = appSettings["phoneNumberForCallbacks"];
             app.Use(async (context, next) =>
             {
                 var builder = new UriBuilder(context.Request.Uri);
@@ -38,7 +33,8 @@ namespace CallApp
                     var numbers = await AvailableNumber.SearchLocal(catapult, new Dictionary<string, object> { { "state", "NC" }, { "city", "Cary" }, { "quantity", 1 } });
                     phoneNumber = numbers.First().Number;
                     await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", phoneNumber } });
-                    appSettings.Add("phoneNumberForCallbacks",  phoneNumber);
+                    var config = WebConfigurationManager.OpenWebConfiguration("~");
+                    config.AppSettings.Settings.Add("phoneNumberForCallbacks",  phoneNumber);
                     config.Save(ConfigurationSaveMode.Minimal, false);
                     ConfigurationManager.RefreshSection("appSettings");
                 }
