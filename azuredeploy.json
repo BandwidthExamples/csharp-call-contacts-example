@@ -67,6 +67,7 @@
           ],
           "properties":{
             "RepoUrl":"https://github.com/BandwidthExamples/csharp-call-contacts-example.git",
+            "branch":"refactoring",
             "IsManualIntegration": true
           }
         },
