@@ -24,9 +24,9 @@ Catapult Api demo app (creating calls and bridges)
 ### Azure One Click
 
 #### Settings Required To Run
-* ```User Id```
-* ```Api Token```
-* ```Api Secret```
+* ```Catapult User Id```
+* ```Catapult Api Token```
+* ```Catapult Api Secret```
 * ```Contacts``` (your contact list in form `Ann:+1234567890;Joe:+1111111111`)
 * ```Your Numbers``` (your numbers in form `Mobile:+1234567890;Work:+1111111111`)
 
