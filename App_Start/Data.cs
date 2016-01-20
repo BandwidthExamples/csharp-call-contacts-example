@@ -33,7 +33,7 @@ namespace CallApp
         public IList<Contact> GetContacts()
         {
             var contacts = ConfigurationManager.AppSettings["contacts"];
-            if(string.IsNullOrWhiteSpace(contacts))
+            if(!string.IsNullOrWhiteSpace(contacts))
             {
                 return (from c in contacts.Split(';')
                         let values = c.Split(':')
@@ -49,7 +49,7 @@ namespace CallApp
         public IList<Number> GetUserNumbers()
         {
             var numbers = ConfigurationManager.AppSettings["userNumbers"];
-            if (numbers != null && !string.IsNullOrWhiteSpace(numbers))
+            if (!string.IsNullOrWhiteSpace(numbers))
             {
                 return (from c in numbers.Split(';')
                         let values = c.Split(':')
