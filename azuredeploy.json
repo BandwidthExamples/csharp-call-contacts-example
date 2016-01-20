@@ -1,0 +1,92 @@
+{
+  "$schema":"http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion":"1.0.0.0",
+  "parameters":{
+    "siteName":{
+      "type":"string",
+      "metadata": {
+        "description": "The name of the web app that you wish to create."
+      }
+    },
+    "siteLocation":{
+      "type":"string",
+      "defaultValue": "East US 2",
+      "metadata": {
+        "description": "The location to use for creating the web app and hosting plan."
+      }
+    },
+    "catapultUserId":{
+      "type":"string",
+      "metadata":{
+        "description":"Catapult User Id"
+      }
+    },
+    "catapultApiToken":{
+      "type":"string",
+      "metadata":{
+        "description":"Catapult Api Token"
+      }
+    },
+    "catapultApiSecret":{
+      "type":"string",
+      "metadata":{
+        "description":"Catapult Api Secret"
+      }
+    },
+    "contacts":{
+      "type":"string",
+      "metadata":{
+        "description":"Contacts list in form: Brent:+1234567890;John:+1234567891"
+      }
+    }
+    "yourNumbers":{
+      "type":"string",
+      "metadata":{
+        "description":"Your numbers in form: Home:+1234567890;Work:+1234567891"
+      }
+    }
+
+  },
+  "resources":[
+    {
+      "apiVersion":"2015-08-01",
+      "name":"[parameters('siteName')]",
+      "type":"Microsoft.Web/Sites",
+      "location": "[parameters('siteLocation')]",
+      "properties":{
+        "name":"[parameters('siteName')]"
+      },
+      "resources":[
+        {
+          "apiVersion":"2015-08-01",
+          "type":"sourcecontrols",
+          "name":"web",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+            "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
+          ],
+          "properties":{
+            "RepoUrl":"https://github.com/BandwidthExamples/node-hybrid-iris-catapult-app.git",
+            "branch":"master",
+            "IsManualIntegration": true
+          }
+        },
+        {
+          "apiVersion":"2015-08-01",
+          "type":"config",
+          "name":"appsettings",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+          ],
+          "properties":{
+            "userId": "[parameters('catapultUserId')]",
+            "apiToken": "[parameters('catapultApiToken')]",
+            "apiSecret": "[parameters('catapultApiSecret')]",
+            "contacts": "[parameters('contacts')]",
+            "userNumbers": "[parameters('yourNumbers')]",
+          }
+        }
+      ]
+    }
+  ]
+}
