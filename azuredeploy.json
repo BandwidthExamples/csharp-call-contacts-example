@@ -38,7 +38,7 @@
       "metadata":{
         "description":"Contacts list in form: Brent:+1234567890;John:+1234567891"
       }
-    }
+    },
     "yourNumbers":{
       "type":"string",
       "metadata":{
