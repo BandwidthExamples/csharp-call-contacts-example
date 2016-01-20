@@ -14,26 +14,31 @@ namespace CallApp
         //Initialze Catapult specific data
         public static void Configure(IAppBuilder app)
         {
-            var reader = new AppSettingsReader();
-            var catapult = Client.GetInstance(reader.GetValue("userId", typeof (string)) as string,
-                reader.GetValue("apiToken", typeof (string)) as string,
-                reader.GetValue("apiSecret", typeof (string)) as string);
-            var phoneNumber = reader.GetValue("phoneNumberForCallbacks", typeof (string)) as string;
+            var config = WebConfigurationManager.OpenWebConfiguration("~");
+            var appSettings = config.AppSettings.Settings;
+            var catapult = Client.GetInstance(appSettings["userId"].Value,
+                appSettings["apiToken"].Value,
+                appSettings["apiSecret"].Value);
+            string phoneNumber = null;
+            if(appSettings["phoneNumberForCallbacks"] != null)
+            {
+                phoneNumber = appSettings["phoneNumberForCallbacks"].Value;
+            }
             app.Use(async (context, next) =>
             {
                 var builder = new UriBuilder(context.Request.Uri);
-                builder.Path = "";
+                builder.Path = "/";
                 builder.Query = "";
                 var baseUrl = builder.ToString();
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1); //remove last '/'
 
                 if (string.IsNullOrEmpty(phoneNumber))
                 {
                     //reserve a phone numbers for callbacks if need
-                    var config = WebConfigurationManager.OpenWebConfiguration("~");
                     var numbers = await AvailableNumber.SearchLocal(catapult, new Dictionary<string, object> { { "state", "NC" }, { "city", "Cary" }, { "quantity", 1 } });
                     phoneNumber = numbers.First().Number;
-                    await PhoneNumber.Create(new Dictionary<string, object> { { "number", phoneNumber } });
-                    config.AppSettings.Settings["phoneNumberForCallbacks"].Value = phoneNumber;
+                    await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", phoneNumber } });
+                    appSettings.Add("phoneNumberForCallbacks",  phoneNumber);
                     config.Save(ConfigurationSaveMode.Minimal, false);
                     ConfigurationManager.RefreshSection("appSettings");
                 }

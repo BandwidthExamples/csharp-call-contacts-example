@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CallApp.Models;
 using Owin;
+using System.Web.Configuration;
+using System.Configuration;
 
 namespace CallApp
 {
@@ -13,11 +15,11 @@ namespace CallApp
         //add or remove any records you need
         private static readonly Contact[] Contacts =  new[]
         {
-            new Contact {Name = "Timon Cardenas", Message = "consequat, lectus sit", PhoneNumber = "+19196947781"},
-            new Contact {Name = "Brent Lucas", Message = "vel arcu eu", PhoneNumber = "+12028883929"},
-            new Contact {Name = "Rashad Wilcox", Message = "too too too", PhoneNumber = "+18662161172"},
-            new Contact {Name = "Keegan Erickson", Message = "Cras lorem lorem,", PhoneNumber = "+13522569207"},
-            new Contact {Name = "Dustin Figueroa", Message = "nec enim. Nunc", PhoneNumber = "+18768393387"}
+            new Contact {Name = "Timon Cardenas",  PhoneNumber = "+19196947781"},
+            new Contact {Name = "Brent Lucas",  PhoneNumber = "+12028883929"},
+            new Contact {Name = "Rashad Wilcox", PhoneNumber = "+18662161172"},
+            new Contact {Name = "Keegan Erickson",  PhoneNumber = "+13522569207"},
+            new Contact {Name = "Dustin Figueroa",  PhoneNumber = "+18768393387"}
         };
 
         //replace phone numbers here with own numbers (which can receive incoming call too)
@@ -27,14 +29,42 @@ namespace CallApp
             new Number{PhoneNumber = "+19196943243", Type = "Cell Number"},
             new Number{PhoneNumber = "+12522569209", Type = "Home Number"}
         };
-        
+        private readonly KeyValueConfigurationCollection _appSettings;
+
+        public DataProvider(KeyValueConfigurationCollection appSettings)
+        {
+            this._appSettings = appSettings;
+        }
+
         public IList<Contact> GetContacts()
         {
+            var contacts = _appSettings["contacts"];
+            if(contacts != null && !string.IsNullOrWhiteSpace(contacts.Value))
+            {
+                return (from c in contacts.Value.Split(';')
+                        let values = c.Split(':')
+                        select new Contact
+                        {
+                            Name = values[0].Trim(),
+                            PhoneNumber = values[1].Trim()
+                        }).ToList();
+            }
             return Contacts;
         }
 
         public IList<Number> GetUserNumbers()
         {
+            var numbers = _appSettings["userNumbers"];
+            if (numbers != null && !string.IsNullOrWhiteSpace(numbers.Value))
+            {
+                return (from c in numbers.Value.Split(';')
+                        let values = c.Split(':')
+                        select new Number
+                        {
+                            Type = values[0].Trim(),
+                            PhoneNumber = values[1].Trim()
+                        }).ToList();
+            }
             return UserNumbers;
         }
 
@@ -53,7 +83,9 @@ namespace CallApp
     {
         public static void Load(IAppBuilder app)
         {
-            app.CreatePerOwinContext(() => new DataProvider());
+            var config = WebConfigurationManager.OpenWebConfiguration("~");
+            var appSettings = config.AppSettings.Settings;
+            app.CreatePerOwinContext(() => new DataProvider(appSettings));
         }
 
     }
