@@ -123,35 +123,35 @@ await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", 
 
 ### Deploy
 #### Click the 'Deploy to Azure' Button and enter Catapult Creds
-![Fill in information](/README_Images/step1.png?raw=true)
+![Fill in information](/README_Images/step1_.png?raw=true)
 ---
 
-![Click Deploy](/README_Images/step2.png?raw=true)
+![Click Deploy](/README_Images/step2.png_?raw=true)
 ---
 
-![Click Manage your resources](/README_Images/step3.png?raw=true)
+![Click Manage your resources](/README_Images/step3_.png?raw=true)
 ---
 
-![Find the newly Deployed App](/README_Images/step4.png?raw=true)
+![Find the newly Deployed App](/README_Images/step4_.png?raw=true)
 ---
 
-![Click the URL to open the web page](/README_Images/step5.png?raw=true)
+![Click the URL to open the web page](/README_Images/step5_.png?raw=true)
 
 
 ### Demo
 #### Add a contact (with real phone number)
-![Click to add contact](/README_Images/step6.png?raw=true)
+![Click to add contact](/README_Images/step6_.png?raw=true)
 ---
 
-![Adding Contact](/README_Images/step7.png?raw=true)
+![Adding Contact](/README_Images/step7_.png?raw=true)
 ---
 
 
 #### Click to call contact
-![Click to call contact](/README_Images/step8.png?raw=true)
+![Click to call contact](/README_Images/step8_.png?raw=true)
 
 #### Enter your 'From' phone number and click call
-![Add your number](/README_Images/step9.png?raw=true)
+![Add your number](/README_Images/step9_.png?raw=true)
 
 
 
