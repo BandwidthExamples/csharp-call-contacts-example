@@ -11,6 +11,7 @@ using Bandwidth.Net.Model;
 using CallApp.Models;
 using Microsoft.AspNet.Identity.Owin;
 using System.Linq;
+using System.Data.Entity.Validation;
 
 namespace CallApp.Controllers
 {
@@ -44,6 +45,66 @@ namespace CallApp.Controllers
             catch (Exception ex)
             {
                 return Json(new {error = ex.Message});
+            }
+        }
+
+        //POST /Home/Contact
+        [HttpPost, ActionName("Contact")]
+        public async Task<ActionResult> PostContact(Contact contact)
+        {
+            try
+            {
+                DbContext.Contacts.Add(contact);
+                await DbContext.SaveChangesAsync();
+                return Json(contact);
+            }
+            catch (DbEntityValidationException e)
+            {
+                var builder = new StringBuilder();
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        builder.AppendFormat("Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                        builder.AppendLine();
+                    }
+                }
+                return Json(new { error = builder.ToString() });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        //POST /Home/UserNumber
+        [HttpPost, ActionName("UserNumber")]
+        public async Task<ActionResult> PostUserNumber(Number number)
+        {
+            try
+            {
+                DbContext.Numbers.Add(number);
+                await DbContext.SaveChangesAsync();
+                return Json(number);
+            }
+            catch (DbEntityValidationException e)
+            {
+                var builder = new StringBuilder();
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        builder.AppendFormat("Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                        builder.AppendLine();
+                    }
+                }
+                return Json(new { error = builder.ToString() });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
             }
         }
 

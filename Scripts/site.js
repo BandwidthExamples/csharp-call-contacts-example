@@ -26,5 +26,18 @@
             selectNumberDialog.find("input[type=tel]").val("");
             selectNumberDialog.modal();
         });
+        var btnAddContact = $(".btn-add-contact-form");
+        var formAddContact = $(".form-add-contact");
+        btnAddContact.on("click", function () {
+            btnAddContact.hide();
+            formAddContact.show();
+        });
+        formAddContact.on("submit", function () {
+            var data = { name: formAddContact.find("input[name='name']").val(), phoneNumber: formAddContact.find("input[name='phoneNumber']").val() };
+            $.post("/home/contact", data, function () {
+                location.reload();
+            }, "json");
+            return false;
+        });
     });
 })(jQuery);

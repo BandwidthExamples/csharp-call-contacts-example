@@ -32,20 +32,7 @@
       "metadata":{
         "description":"Catapult Api Secret"
       }
-    },
-    "contacts":{
-      "type":"string",
-      "metadata":{
-        "description":"Contacts list in form: Brent:+1234567890;John:+1234567891"
-      }
-    },
-    "yourNumbers":{
-      "type":"string",
-      "metadata":{
-        "description":"Your numbers in form: Home:+1234567890;Work:+1234567891"
-      }
     }
-
   },
   "resources":[
     {
