@@ -15,7 +15,7 @@
 - Configured Machine with Ngrok/Port Forwarding -OR- Azure Account
   - [Ngrok](https://ngrok.com/)
   - [Azure](https://account.windowsazure.com/Home/Index)
-- [Catapult Account](https://catapult.inetwork.com/pages/signup.jsf/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
+- [Catapult Account](http://ap.bandwidth.com/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
 - [Visual Studio 2015](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx)
 - [Git](https://git-scm.com/)
 - Common Azure Tools for Visual Studio (they are preinstalled with Visual Studio)
