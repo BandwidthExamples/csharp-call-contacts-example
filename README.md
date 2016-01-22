@@ -126,7 +126,7 @@ await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", 
 ![Fill in information](/README_Images/step1_.png?raw=true)
 ---
 
-![Click Deploy](/README_Images/step2.png_?raw=true)
+![Click Deploy](/README_Images/step2_.png?raw=true)
 ---
 
 ![Click Manage your resources](/README_Images/step3_.png?raw=true)
