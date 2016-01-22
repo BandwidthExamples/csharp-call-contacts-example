@@ -126,32 +126,32 @@ await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", 
 ![Fill in information](/README_Images/step1.png?raw=true)
 ---
 
-![Click Deploy](/README_Images/step2.PNG?raw=true)
+![Click Deploy](/README_Images/step2.png?raw=true)
 ---
 
-![Click Manage your resources](/README_Images/step3.PNG?raw=true)
+![Click Manage your resources](/README_Images/step3.png?raw=true)
 ---
 
-![Find the newly Deployed App](/README_Images/step4.PNG?raw=true)
+![Find the newly Deployed App](/README_Images/step4.png?raw=true)
 ---
 
-![Click the URL to open the web page](/README_Images/step5.PNG?raw=true)
+![Click the URL to open the web page](/README_Images/step5.png?raw=true)
 
 
 ### Demo
 #### Add a contact (with real phone number)
-![Click to add contact](/README_Images/step6.PNG?raw=true)
+![Click to add contact](/README_Images/step6.png?raw=true)
 ---
 
-![Adding Contact](/README_Images/step7.PNG?raw=true)
+![Adding Contact](/README_Images/step7.png?raw=true)
 ---
 
 
 #### Click to call contact
-![Click to call contact](/README_Images/step8.PNG?raw=true)
+![Click to call contact](/README_Images/step8.png?raw=true)
 
 #### Enter your 'From' phone number and click call
-![Add your number](/README_Images/step9.PNG?raw=true)
+![Add your number](/README_Images/step9.png?raw=true)
 
 
 
