@@ -124,15 +124,28 @@ await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", 
 ### Deploy
 #### Click the 'Deploy to Azure' Button and enter Catapult Creds
 ![Fill in information](/README_Images/step1.png?raw=true)
+---
+
 ![Click Deploy](/README_Images/step2.PNG?raw=true)
+---
+
 ![Click Manage your resources](/README_Images/step3.PNG?raw=true)
+---
+
 ![Find the newly Deployed App](/README_Images/step4.PNG?raw=true)
+---
+
 ![Click the URL to open the web page](/README_Images/step5.PNG?raw=true)
+
 
 ### Demo
 #### Add a contact (with real phone number)
 ![Click to add contact](/README_Images/step6.PNG?raw=true)
+---
+
 ![Adding Contact](/README_Images/step7.PNG?raw=true)
+---
+
 
 #### Click to call contact
 ![Click to call contact](/README_Images/step8.PNG?raw=true)
