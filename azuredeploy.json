@@ -68,9 +68,7 @@
           "properties":{
             "userId": "[parameters('catapultUserId')]",
             "apiToken": "[parameters('catapultApiToken')]",
-            "apiSecret": "[parameters('catapultApiSecret')]",
-            "contacts": "[parameters('contacts')]",
-            "userNumbers": "[parameters('yourNumbers')]",
+            "apiSecret": "[parameters('catapultApiSecret')]"
           }
         }
       ]
