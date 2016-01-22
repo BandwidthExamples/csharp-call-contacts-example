@@ -40,6 +40,7 @@ namespace CallApp.Controllers
                     await DbContext.SaveChangesAsync();
                 }
 
+                //make a call
                 var c = await Call.Create(Client, new Dictionary<string, object>
                 {
                     {"from", PhoneNumberForCallbacks},
