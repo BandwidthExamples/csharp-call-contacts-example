@@ -1,5 +1,5 @@
 ﻿@using CallApp.Models
-@model IEnumerable<Contact>
+@model Contact[]
 @{
     ViewBag.Title = "Contacts";
 }
@@ -17,27 +17,35 @@
     </div>
     <button type="submit" class="btn btn-primary btn-add-contact">Add</button>
 </form>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Phone number</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model)
-        {
-            <tr>
-                <td>@c.Name</td>
-                <td>@c.PhoneNumber</td>
-                <td>
-                    <button data-phone="@c.PhoneNumber" class="btn btn-default btn-call" type="button"><span class="glyphicon glyphicon-earphone"></span><span>  Click To Call</span></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="data">
+    @if (Model.Length > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone number</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>@c.Name</td>
+                        <td>@c.PhoneNumber</td>
+                        <td>
+                            <button data-phone="@c.PhoneNumber" class="btn btn-default btn-call" type="button"><span class="glyphicon glyphicon-earphone"></span><span>  Click To Call</span></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else {
+        <p>No contacts. Please add them.</p>
+    }
+</div>
 <div class="modal fade" id="select-number-dialog" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -49,7 +57,7 @@
                 <div class="btn-group-vertical fill100" role="group">
                     @foreach (var n in ViewBag.UserNumbers)
                     {
-                        <button class="btn btn-number btn-default" data-phone="@n.PhoneNumber">@string.Format("{0} ({1})", n.PhoneNumber, n.Type)</button>
+                        <button class="btn btn-number btn-default" data-phone="@n.PhoneNumber">@n.PhoneNumber</button>
                     }
                 </div>
                 <form>

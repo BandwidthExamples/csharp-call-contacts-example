@@ -10,7 +10,7 @@ namespace CallApp.Models
         [Required]
         public string Name { get; set; }
 
-        [Required, Index(IsUnique = true)]
+        [Required, Index]
         public string PhoneNumber { get; set; }
     }
 }

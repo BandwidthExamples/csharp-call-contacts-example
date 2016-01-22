@@ -7,10 +7,8 @@ namespace CallApp.Models
     {
         public long Id { get; set; }
 
-        [Required]
+        [Required, Index]
         public string PhoneNumber { get; set; }
 
-        [Required, Index(IsUnique = true)]
-        public string Type { get; set; }
     }
 }

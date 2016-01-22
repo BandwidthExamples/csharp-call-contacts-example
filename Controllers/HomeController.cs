@@ -32,6 +32,14 @@ namespace CallApp.Controllers
             {
                 if (string.IsNullOrEmpty(call.From)) throw new ArgumentException("Field From is missing");
                 if (string.IsNullOrEmpty(call.To)) throw new ArgumentException("Field To is missing");
+                
+                //save 'From' in db if need
+                if (!DbContext.Numbers.Any(n => n.PhoneNumber == call.From))
+                {
+                    DbContext.Numbers.Add(new Number { PhoneNumber = call.From });
+                    await DbContext.SaveChangesAsync();
+                }
+
                 var c = await Call.Create(Client, new Dictionary<string, object>
                 {
                     {"from", PhoneNumberForCallbacks},
@@ -54,9 +62,9 @@ namespace CallApp.Controllers
         {
             try
             {
-                DbContext.Contacts.Add(contact);
+                var item = DbContext.Contacts.Add(contact);
                 await DbContext.SaveChangesAsync();
-                return Json(contact);
+                return Json(item);
             }
             catch (DbEntityValidationException e)
             {
@@ -74,40 +82,15 @@ namespace CallApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { error = ex.Message });
-            }
-        }
-
-        //POST /Home/UserNumber
-        [HttpPost, ActionName("UserNumber")]
-        public async Task<ActionResult> PostUserNumber(Number number)
-        {
-            try
-            {
-                DbContext.Numbers.Add(number);
-                await DbContext.SaveChangesAsync();
-                return Json(number);
-            }
-            catch (DbEntityValidationException e)
-            {
-                var builder = new StringBuilder();
-                foreach (var eve in e.EntityValidationErrors)
+                while (ex.InnerException != null)
                 {
-                    foreach (var ve in eve.ValidationErrors)
-                    {
-                        builder.AppendFormat("Property: \"{0}\", Error: \"{1}\"",
-                            ve.PropertyName, ve.ErrorMessage);
-                        builder.AppendLine();
-                    }
+                    ex = ex.InnerException; //last exception contains usefull info
                 }
-                return Json(new { error = builder.ToString() });
-            }
-            catch (Exception ex)
-            {
                 return Json(new { error = ex.Message });
             }
         }
 
+        
         //POST /Home/CatapultFromCallback (it's used for Catapult events for call to "from" number)
         [HttpPost, ActionName("CatapultFromCallback")]
         public async Task<ActionResult> PostCatapultFromCallback()
@@ -128,6 +111,7 @@ namespace CallApp.Controllers
             }
             return Json(new object());
         }
+           
 
         //POST /Home/CatapultToCallback (it's used for Catapult events for call to "to" number)
         [HttpPost, ActionName("CatapultToCallback")]

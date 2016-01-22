@@ -1,15 +1,17 @@
-﻿(function($) {
+﻿(function ($) {
+    var resultHandler = function (r) {
+        if (r && r.error) {
+            alert(r.error);
+        }
+        location.reload();
+    };
     $(function() {
         var selectNumberDialog = $("#select-number-dialog");
         var to;
         selectNumberDialog.on("hidden.bs.modal", function() {
             var phoneNumber = selectNumberDialog.data("phone");
             if (!phoneNumber) return;
-            $.post("/home/call", { from: phoneNumber, to: to }, function(r) {
-                if (r && r.error) {
-                    alert(r.error);
-                }
-            }, "json");
+            $.post("/home/call", { from: phoneNumber, to: to }, resultHandler, "json");
         });
         selectNumberDialog.find(".btn-number").on("click", function() {
             selectNumberDialog.data("phone", $(this).data("phone"));
@@ -34,9 +36,7 @@
         });
         formAddContact.on("submit", function () {
             var data = { name: formAddContact.find("input[name='name']").val(), phoneNumber: formAddContact.find("input[name='phoneNumber']").val() };
-            $.post("/home/contact", data, function () {
-                location.reload();
-            }, "json");
+            $.post("/home/contact", data, resultHandler, "json");
             return false;
         });
     });
