@@ -1,33 +1,51 @@
 ﻿@using CallApp.Models
-@model IEnumerable<Contact>
+@model Contact[]
 @{
     ViewBag.Title = "Contacts";
 }
 
 <h2>Contacts</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Message</th>
-            <th>Phone number</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model)
-        {
-            <tr>
-                <td>@c.Name</td>
-                <td>@c.Message</td>
-                <td>@c.PhoneNumber</td>
-                <td>
-                    <button data-phone="@c.PhoneNumber" class="btn btn-default btn-call" type="button"><span class="glyphicon glyphicon-earphone"></span><span>  Click To Call</span></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<button class="btn btn-primary btn-add-contact-form">Add contact</button>
+<form class="form-inline form-add-contact well well-sm" style="display:none;">
+    <div class="form-group">
+        <label class="sr-only">Name</label>
+        <input name="name" type="text" class="form-control" placeholder="Name" required>
+    </div>
+    <div class="form-group">
+        <label class="sr-only">Phone number</label>
+        <input name="phoneNumber" type="tel" class="form-control" placeholder="Phone number" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-add-contact">Add</button>
+</form>
+<div class="data">
+    @if (Model.Length > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone number</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>@c.Name</td>
+                        <td>@c.PhoneNumber</td>
+                        <td>
+                            <button data-phone="@c.PhoneNumber" class="btn btn-default btn-call" type="button"><span class="glyphicon glyphicon-earphone"></span><span>  Click To Call</span></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else {
+        <p>No contacts. Please add them.</p>
+    }
+</div>
 <div class="modal fade" id="select-number-dialog" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -39,7 +57,7 @@
                 <div class="btn-group-vertical fill100" role="group">
                     @foreach (var n in ViewBag.UserNumbers)
                     {
-                        <button class="btn btn-number btn-default" data-phone="@n.PhoneNumber">@string.Format("{0} ({1})", n.PhoneNumber, n.Type)</button>
+                        <button class="btn btn-number btn-default" data-phone="@n.PhoneNumber">@n.PhoneNumber</button>
                     }
                 </div>
                 <form>

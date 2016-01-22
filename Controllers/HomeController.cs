@@ -10,6 +10,8 @@ using Bandwidth.Net;
 using Bandwidth.Net.Model;
 using CallApp.Models;
 using Microsoft.AspNet.Identity.Owin;
+using System.Linq;
+using System.Data.Entity.Validation;
 
 namespace CallApp.Controllers
 {
@@ -18,8 +20,8 @@ namespace CallApp.Controllers
         // GET / (and /Home)
         public ActionResult Index()
         {
-            ViewBag.UserNumbers = DataProvider.GetUserNumbers();
-            return View(DataProvider.GetContacts());
+            ViewBag.UserNumbers = DbContext.Numbers.ToArray();
+            return View(DbContext.Contacts.ToArray());
         }
 
         //POST /Home/Call
@@ -30,6 +32,15 @@ namespace CallApp.Controllers
             {
                 if (string.IsNullOrEmpty(call.From)) throw new ArgumentException("Field From is missing");
                 if (string.IsNullOrEmpty(call.To)) throw new ArgumentException("Field To is missing");
+                
+                //save 'From' in db if need
+                if (!DbContext.Numbers.Any(n => n.PhoneNumber == call.From))
+                {
+                    DbContext.Numbers.Add(new Number { PhoneNumber = call.From });
+                    await DbContext.SaveChangesAsync();
+                }
+
+                //make a call
                 var c = await Call.Create(Client, new Dictionary<string, object>
                 {
                     {"from", PhoneNumberForCallbacks},
@@ -46,6 +57,41 @@ namespace CallApp.Controllers
             }
         }
 
+        //POST /Home/Contact
+        [HttpPost, ActionName("Contact")]
+        public async Task<ActionResult> PostContact(Contact contact)
+        {
+            try
+            {
+                var item = DbContext.Contacts.Add(contact);
+                await DbContext.SaveChangesAsync();
+                return Json(item);
+            }
+            catch (DbEntityValidationException e)
+            {
+                var builder = new StringBuilder();
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        builder.AppendFormat("Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                        builder.AppendLine();
+                    }
+                }
+                return Json(new { error = builder.ToString() });
+            }
+            catch (Exception ex)
+            {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException; //last exception contains usefull info
+                }
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        
         //POST /Home/CatapultFromCallback (it's used for Catapult events for call to "from" number)
         [HttpPost, ActionName("CatapultFromCallback")]
         public async Task<ActionResult> PostCatapultFromCallback()
@@ -66,6 +112,7 @@ namespace CallApp.Controllers
             }
             return Json(new object());
         }
+           
 
         //POST /Home/CatapultToCallback (it's used for Catapult events for call to "to" number)
         [HttpPost, ActionName("CatapultToCallback")]
@@ -94,7 +141,7 @@ namespace CallApp.Controllers
             // "from" number answered a call. speak him a message
             var call = new Call { Id = ev.CallId };
             call.SetClient(Client);
-            var contact = DataProvider.FindContactByPhoneNumber(ev.Tag);
+            var contact = DbContext.Contacts.FirstOrDefault(c => c.PhoneNumber == ev.Tag);
             if (contact == null)
             {
                 throw new Exception("Missing contact for number " + ev.Tag);
@@ -135,14 +182,14 @@ namespace CallApp.Controllers
             return Task.FromResult(0);
         }
 
-        private DataProvider _dataProvider;
-        public DataProvider DataProvider
+        private CallAppDbContext _dbContext;
+        public CallAppDbContext DbContext
         {
             get
             {
-                return _dataProvider ?? Request.GetOwinContext().Get<DataProvider>();
+                return _dbContext ?? Request.GetOwinContext().Get<CallAppDbContext>();
             }
-            set { _dataProvider = value; }
+            set { _dbContext = value; }
         }
 
         private Client _client;
