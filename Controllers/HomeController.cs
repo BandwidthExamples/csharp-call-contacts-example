@@ -10,6 +10,7 @@ using Bandwidth.Net;
 using Bandwidth.Net.Model;
 using CallApp.Models;
 using Microsoft.AspNet.Identity.Owin;
+using System.Linq;
 
 namespace CallApp.Controllers
 {
@@ -18,8 +19,8 @@ namespace CallApp.Controllers
         // GET / (and /Home)
         public ActionResult Index()
         {
-            ViewBag.UserNumbers = DataProvider.GetUserNumbers();
-            return View(DataProvider.GetContacts());
+            ViewBag.UserNumbers = DbContext.Numbers.ToArray();
+            return View(DbContext.Contacts.ToArray());
         }
 
         //POST /Home/Call
@@ -94,7 +95,7 @@ namespace CallApp.Controllers
             // "from" number answered a call. speak him a message
             var call = new Call { Id = ev.CallId };
             call.SetClient(Client);
-            var contact = DataProvider.FindContactByPhoneNumber(ev.Tag);
+            var contact = DbContext.Contacts.FirstOrDefault(c => c.PhoneNumber == ev.Tag);
             if (contact == null)
             {
                 throw new Exception("Missing contact for number " + ev.Tag);
@@ -135,14 +136,14 @@ namespace CallApp.Controllers
             return Task.FromResult(0);
         }
 
-        private DataProvider _dataProvider;
-        public DataProvider DataProvider
+        private CallAppDbContext _dbContext;
+        public CallAppDbContext DbContext
         {
             get
             {
-                return _dataProvider ?? Request.GetOwinContext().Get<DataProvider>();
+                return _dbContext ?? Request.GetOwinContext().Get<CallAppDbContext>();
             }
-            set { _dataProvider = value; }
+            set { _dbContext = value; }
         }
 
         private Client _client;
