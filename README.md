@@ -153,5 +153,3 @@ await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", 
 #### Enter your 'From' phone number and click call
 ![Add your number](/README_Images/step9_.png?raw=true)
 
-
-

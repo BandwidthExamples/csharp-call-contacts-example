@@ -163,6 +163,30 @@ namespace CallApp.Controllers
             Debug.WriteLine("Call Id to {0} is {1}", ev.Tag, c.Id);
         }
 
+        private async Task ProcessCatapultFromEvent(HangupEvent ev)
+        {
+            var activeCalls = HttpContext.Application["ActiveCalls"] as Dictionary<string, string> ??
+                              new Dictionary<string, string>();
+            //hang up another leg
+            string anotherCallId;
+            if (activeCalls.TryGetValue(ev.CallId, out anotherCallId))
+            {
+                activeCalls.Remove(ev.CallId);
+                activeCalls.Remove(anotherCallId);
+                Debug.WriteLine("Hang up another call of bridge (id {0})", anotherCallId);
+                var call = new Call { Id = anotherCallId };
+                call.SetClient(Client);
+                try
+                {
+                    await call.HangUp();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error on hang up another call (id {0}) of the bridge: {1}", anotherCallId, ex.Message);
+                }
+            }
+        }
+
         private Task ProcessCatapultFromEvent(BaseEvent ev)
         {
             //other events handler
@@ -173,7 +197,17 @@ namespace CallApp.Controllers
         {
             //"to" number answered a call. Making a bridge with "from" number's call
             var b = await Bridge.Create(Client, new[] {ev.CallId, ev.Tag}, true);
+            var activeCalls = HttpContext.Application["ActiveCalls"] as Dictionary<string, string> ??
+                              new Dictionary<string, string>();
+            activeCalls.Add(ev.CallId, ev.Tag);
+            activeCalls.Add(ev.Tag, ev.CallId);
+            HttpContext.Application["ActiveCalls"] = activeCalls;
             Debug.WriteLine(string.Format("BridgeId is {0}", b.Id));
+        }
+
+        private  Task ProcessCatapultToEvent(HangupEvent ev)
+        {
+            return ProcessCatapultFromEvent(ev);
         }
 
         private Task ProcessCatapultToEvent(BaseEvent ev)
