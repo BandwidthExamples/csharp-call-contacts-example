@@ -9,7 +9,7 @@
 * [Ordering Phone Number](http://ap.bandwidth.com/docs/rest-api/phonenumbers/#resourcePOSTv1usersuserIdphoneNumbers/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
 * [Making calls](http://ap.bandwidth.com/docs/rest-api/calls/#resourcePOSTv1usersuserIdcalls/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
 * [Creating  bridges](http://ap.bandwidth.com/docs/rest-api/bridges/#resourcePOSTv1usersuserIdbridges/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
-
+* [Ending Calls](http://ap.bandwidth.com/docs/rest-api/calls/#resourcePOSTv1usersuserIdcallscallId/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
 
 ## Prerequisites
 - Configured Machine with Ngrok/Port Forwarding -OR- Azure Account
@@ -105,6 +105,33 @@ private async Task ProcessCatapultToEvent(AnswerEvent ev)
     //"to" number answered a call. Making a bridge with "from" number's call
     var b = await Bridge.Create(Client, new[] {ev.CallId, ev.Tag}, true);
     Debug.WriteLine(string.Format("BridgeId is {0}", b.Id));
+}
+```
+
+### When one call leg is ended, be sure to end the other
+```C#
+private async Task ProcessCatapultFromEvent(HangupEvent ev)
+{
+    var activeCalls = HttpContext.Application["ActiveCalls"] as Dictionary<string, string> ??
+                      new Dictionary<string, string>();
+    //hang up another leg
+    string anotherCallId;
+    if (activeCalls.TryGetValue(ev.CallId, out anotherCallId))
+    {
+        activeCalls.Remove(ev.CallId);
+        activeCalls.Remove(anotherCallId);
+        Debug.WriteLine("Hang up another call of bridge (id {0})", anotherCallId);
+        var call = new Call { Id = anotherCallId };
+        call.SetClient(Client);
+        try
+        {
+            await call.HangUp();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("Error on hang up another call (id {0}) of the bridge: {1}", anotherCallId, ex.Message);
+        }
+    }
 }
 ```
 
