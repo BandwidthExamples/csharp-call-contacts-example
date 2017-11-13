@@ -1,4 +1,9 @@
-### csharp-call-contacts-example
+<div align="center">
+
+# CSharp Call Contacts Example
+
+<a href="http://dev.bandwidth.com"><img src="https://s3.amazonaws.com/bwdemos/BW-VMP.png"/></a>
+</div>
 
 [Catapult](http://ap.bandwidth.com/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_) Api demo app (creating calls and bridges)
 
