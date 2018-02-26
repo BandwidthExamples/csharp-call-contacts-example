@@ -65,81 +65,88 @@ Now you can open it in the browser.
 
 #### Create outbound call and set the ``` callbackURL ``` to the server's address
 ```C#
-var c = await Call.Create(Client, new Dictionary<string, object>
+var cId = await Client.Call.CreateAsync(new CreateCallData
 {
-    {"from", PhoneNumberForCallbacks},
-    {"to", call.From},
-    {"callbackUrl", BaseUrl + Url.Action("CatapultFromCallback")},
-    {"tag", call.To}
+    From = PhoneNumberForCallbacks,
+    To = call.From,
+    CallbackUrl = BaseUrl + Url.Action("CatapultFromCallback"),
+    Tag = call.To
 });
 ```
 
 #### Play Audio after answer event
 ```C#
-private async Task ProcessCatapultFromEvent(AnswerEvent ev)
+case CallbackEventType.Answer:
 {
-    // "from" number answered a call. speak him a message
-    var call = new Call { Id = ev.CallId };
-    call.SetClient(Client);
     var contact = DbContext.Contacts.FirstOrDefault(c => c.PhoneNumber == ev.Tag);
     if (contact == null)
-    {
-        throw new Exception("Missing contact for number " + ev.Tag);
-    }
-    await call.SpeakSentence(string.Format("We are connecting you to {0}", contact.Name), ev.Tag);
+    throw new Exception("Missing contact for number " + ev.Tag);
+    await Client.Call.SpeakSentenceAsync(ev.CallId,
+    string.Format("We are connecting you to {0}", contact.Name), Gender.Female, "susan", "en_US", ev.Tag);
+    break;
 }
 ```
 
 #### Wait until speak event is over and make 2nd call
 ```C#
-private async Task ProcessCatapultFromEvent(SpeakEvent ev)
+case CallbackEventType.Speak:
 {
-    if (ev.Status != "done") return;
+    if (ev.Status != CallbackEventStatus.Done) break;
     //a messages was spoken to "from" number. calling to "to" number
-    var c = await Call.Create(Client, new Dictionary<string, object>
+    var cId = await Client.Call.CreateAsync(new CreateCallData
     {
-        {"from", PhoneNumberForCallbacks},
-        {"to", ev.Tag},
-        {"callbackUrl", BaseUrl + Url.Action("CatapultToCallback")},
-        {"tag", ev.CallId}
+    From = PhoneNumberForCallbacks,
+    To = ev.Tag,
+    CallbackUrl = BaseUrl + Url.Action("CatapultToCallback"),
+    Tag = ev.CallId
     });
-    Debug.WriteLine("Call Id to {0} is {1}", ev.Tag, c.Id);
+    Debug.WriteLine("Call Id to {0} is {1}", ev.Tag, cId);
+    break;
 }
 ```
 
 ### Once 2nd call is answered, create bridge and place calls in bridge
 ```C#
-private async Task ProcessCatapultToEvent(AnswerEvent ev)
+case CallbackEventType.Answer:
 {
     //"to" number answered a call. Making a bridge with "from" number's call
-    var b = await Bridge.Create(Client, new[] {ev.CallId, ev.Tag}, true);
-    Debug.WriteLine(string.Format("BridgeId is {0}", b.Id));
+    var bId = await Client.Bridge.CreateAsync(new CreateBridgeData
+    {
+    BridgeAudio = true,
+    CallIds = new[] {ev.CallId, ev.Tag}
+    });
+    var activeCalls = HttpContext.Application["ActiveCalls"] as Dictionary<string, string> ??
+                    new Dictionary<string, string>();
+    activeCalls.Add(ev.CallId, ev.Tag);
+    activeCalls.Add(ev.Tag, ev.CallId);
+    HttpContext.Application["ActiveCalls"] = activeCalls;
+    Debug.WriteLine(string.Format("BridgeId is {0}", bId));
+    break;
 }
 ```
 
 ### When one call leg is ended, be sure to end the other
 ```C#
-private async Task ProcessCatapultFromEvent(HangupEvent ev)
+private async Task HandleHangup(CallbackEvent ev)
 {
     var activeCalls = HttpContext.Application["ActiveCalls"] as Dictionary<string, string> ??
-                      new Dictionary<string, string>();
+                    new Dictionary<string, string>();
     //hang up another leg
     string anotherCallId;
     if (activeCalls.TryGetValue(ev.CallId, out anotherCallId))
     {
-        activeCalls.Remove(ev.CallId);
-        activeCalls.Remove(anotherCallId);
-        Debug.WriteLine("Hang up another call of bridge (id {0})", anotherCallId);
-        var call = new Call { Id = anotherCallId };
-        call.SetClient(Client);
-        try
-        {
-            await call.HangUp();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("Error on hang up another call (id {0}) of the bridge: {1}", anotherCallId, ex.Message);
-        }
+    activeCalls.Remove(ev.CallId);
+    activeCalls.Remove(anotherCallId);
+    Debug.WriteLine("Hang up another call of bridge (id {0})", anotherCallId);
+    try
+    {
+        await Client.Call.HangupAsync(anotherCallId);
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine("Error on hang up another call (id {0}) of the bridge: {1}", anotherCallId,
+        ex.Message);
+    }
     }
 }
 ```
@@ -147,11 +154,14 @@ private async Task ProcessCatapultFromEvent(HangupEvent ev)
 ### Init
 #### Search then order phone number
 ```C#
-//reserve a phone numbers for callbacks if need
-var numbers = await AvailableNumber.SearchLocal(catapult, new Dictionary<string, object> { { "state", "NC" }, { "city", "Cary" }, { "quantity", 1 } });
+await client.AvailableNumber.SearchLocalAsync(new LocalNumberQuery
+{
+    State = "NC",
+    City = "Cary",
+    Quantity = 1
+});
 phoneNumber = numbers.First().Number;
-await PhoneNumber.Create(catapult, new Dictionary<string, object> { { "number", phoneNumber } });
-}
+await client.PhoneNumber.CreateAsync(new CreatePhoneNumberData {Number = phoneNumber});
 ```
 
 
